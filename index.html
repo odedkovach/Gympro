@@ -407,7 +407,6 @@
     .qr-modal .copy-qr-btn:hover {
       background-color: #ddd;
     }
-    /* Payment link label */
     .qr-modal .payment-link-label {
       font-weight: 600;
       margin-bottom: 0.25rem;
@@ -868,14 +867,18 @@
     
     /* MEDIA QUERY FOR TABLET VIEW (11") */
     @media (max-width: 1024px) {
-      /* Shift the Payment Option and Update Payment modals so they align next to the floating preview modal */
+      /* Shift modals to the right so they appear next to the floating preview modal */
       #paymentOptionModal.active,
-      #updatePaymentModal.active {
+      #updatePaymentModal.active,
+      #mandateModal.active,
+      #floatingPreviewModal.active {
         justify-content: flex-end;
       }
       #paymentOptionModal .modal-content,
-      #updatePaymentModal .modal-content {
-        margin-right: 430px; /* 20px (floating modal margin) + 410px (approx. width of floating modal) */
+      #updatePaymentModal .modal-content,
+      #mandateModal .modal-content,
+      #floatingPreviewModal .modal-content {
+        margin-right: 430px;
       }
     }
   </style>
@@ -1616,11 +1619,9 @@
     function toggleHIMVendor(checkbox) {
       if (checkbox.checked) {
         globalVendorId = "67be052d378501254f315979";
-        // Hide the footer banner when HIM vendor is selected
         document.querySelector('.footer-banner').style.display = "none";
       } else {
         globalVendorId = null;
-        // Restore the footer banner display
         document.querySelector('.footer-banner').style.display = "flex";
       }
       loadPayPortal();
@@ -1774,7 +1775,6 @@
       const modal = document.getElementById('mandateModal');
       modal.classList.add('active');
       modal.style.display = 'flex';
-      // Clear previous values
       document.getElementById('mandateLink').textContent = '';
       document.getElementById('mandateLink').href = '#';
       document.getElementById('mandateQRCode').src = '';
@@ -1914,9 +1914,10 @@
               document.getElementById('completedAmount').textContent = data.amount || "0";
               document.getElementById('completedCurrency').textContent = data.currency || "";
               document.getElementById('completedReference').textContent = data.reference || "";
-              // Close both modals when checkout is paid
+              // Close all related modals when checkout is paid
               closeModal('paymentOptionModal');
               closeModal('updatePaymentModal');
+              closeModal('mandateModal');
               openModal('purchaseCompleteModal');
             }
           })
@@ -2605,11 +2606,11 @@
                           }
                         },
                         {
-                          "alias": "business.bankDetails",
-                          "value": {
-                              "accountNumber": "38290008",
-                              "sortCode": "20-04-15"
-                          }
+                            "alias": "business.bankDetails",
+                            "value": {
+                                "accountNumber": "38290008",
+                                "sortCode": "20-04-15"
+                            }
                         },
                         {
                           "alias": "business.avgMonthlyTurnover",
@@ -2806,7 +2807,6 @@
       button.style.minWidth = originalWidth + "px";
       button.innerText = "Processing...";
       button.disabled = true;
-      // Get the amount from the modal's amount input field
       let invoiceAmount = parseFloat(document.getElementById("modalAmountInput").value);
       if (isNaN(invoiceAmount) || invoiceAmount <= 0) {
         alert("Invoice amount must be a positive number.");
@@ -2853,7 +2853,6 @@
               document.getElementById('completedAmount').textContent = jsonData.amount || invoiceAmount;
               document.getElementById('completedCurrency').textContent = jsonData.currency || "";
               document.getElementById('completedReference').textContent = jsonData.authorizationId || "";
-              // Close both the Collect Payment and Send Payment Link modals on success
               closeModal('paymentOptionModal');
               closeModal('updatePaymentModal');
               openModal('purchaseCompleteModal');
